@@ -47,7 +47,7 @@ contract Rating is Ownable {
         return productIds;
     }
     
-    function getProduct(uint productId) public view returns (uint, string, address[], uint8[]) {
+    function getProduct(uint productId) public view returns (uint id, string title, address[] reviewers, uint8[] ratings) {
         return (products[productId].id, products[productId].title, products[productId].reviewers, products[productId].ratings);
     }
 }

@@ -115,6 +115,6 @@ describe('Rating', async () => {
     await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
     await rating.methods.addReview(1, 2).send({from: accounts[1], gas: '1000000'});
     product = await rating.methods.getProduct(1).call({gas: '1000000'});
-    assert.ok(product[0] == 1 && product[1] == "Product 1" && product[2][0] == accounts[1] && product[3][0] == 2);
+    assert.ok(product.id == 1 && product.title == "Product 1" && product.reviewers[0] == accounts[1] && product.ratings[0] == 2);
   });
 });
