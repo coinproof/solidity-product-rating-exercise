@@ -26,5 +26,95 @@ beforeEach(async () => {
 });
 
 describe('Rating', async () => {
-  
+  it('deploys the contract', () => {
+    assert.ok(rating);
+  });
+
+  it('adds a product', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+  });
+
+  it('adds a product using different account', async () => {
+    let err;
+    try{
+      await rating.methods.addProduct(1, "Product 1").send({from: accounts[1], gas: '1000000'});
+    } catch(_err) {
+      err = _err;
+    };
+    assert.ok(err);
+  });
+
+  it('adds a product that already exists', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    let err;
+    try{
+      await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    } catch(_err) {
+      err = _err;
+    };
+    assert.ok(err);
+  });
+
+  it('adds a product without title', async () => {
+    let err;
+    try{
+      await rating.methods.addProduct(1, "").send({from: accounts[0], gas: '1000000'});
+    } catch(_err) {
+      err = _err;
+    };
+    assert.ok(err);
+  });
+
+  it('gets the products ids list', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    let productIds = await rating.methods.getProductsIds().call({gas: '1000000'});
+    assert.ok(productIds.length && productIds[0] == 1);
+  });
+
+  it('makes a review', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    await rating.methods.addReview(1, 4).send({from: accounts[1], gas: '1000000'});
+  });
+
+  it('makes a review for the same product', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    await rating.methods.addReview(1, 4).send({from: accounts[1], gas: '1000000'});
+    let err;
+    try{
+      await rating.methods.addReview(1, 1).send({from: accounts[1], gas: '1000000'});
+    } catch(_err){
+      err = _err;
+    }
+    assert.ok(err);
+  });
+
+  it('makes a review with rating out of range', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    let err;
+    try{
+      await rating.methods.addReview(1, 7).send({from: accounts[1], gas: '1000000'});
+    } catch(_err){
+      err = _err;
+    }
+    assert.ok(err);
+  });
+
+  it('makes a review for product that doesnt exist', async () => {
+    let err;
+    try{
+      await rating.methods.addReview(1, 2).send({from: accounts[1], gas: '1000000'});
+    } catch(_err){
+      err = _err;
+    }
+    assert.ok(err);
+  });
+
+  let product;
+
+  it('gets a specific product', async () => {
+    await rating.methods.addProduct(1, "Product 1").send({from: accounts[0], gas: '1000000'});
+    await rating.methods.addReview(1, 2).send({from: accounts[1], gas: '1000000'});
+    product = await rating.methods.getProduct(1).call({gas: '1000000'});
+    assert.ok(product[0] == 1 && product[1] == "Product 1" && product[2][0] == accounts[1] && product[3][0] == 2);
+  });
 });
