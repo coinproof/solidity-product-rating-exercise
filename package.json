@@ -1,0 +1,21 @@
+{
+  "name": "solidity-exercise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ganache-cli": "^6.1.6",
+    "mocha": "^5.2.0",
+    "openzeppelin-solidity": "^1.12.0-rc.1",
+    "web3": "^1.0.0-beta.35"
+  }
+}
