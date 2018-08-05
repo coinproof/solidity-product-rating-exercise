@@ -1,8 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
-contract Rating is Ownable {
+contract Rating is Ownable, StandardToken {
     struct Review {
         uint8 rating;
         bool isSet;
@@ -18,8 +19,15 @@ contract Rating is Ownable {
     mapping(uint => Product) public products;
     uint[] productIds;
 
+    string public name = "ReviewToken";
+    string public symbol = "RVW";
+    uint8 public decimals = 2;
+    uint public INITIAL_SUPPLY = 1000000;
+
     constructor() public {
         owner = msg.sender;
+        totalSupply_ = INITIAL_SUPPLY;
+        balances[msg.sender] = INITIAL_SUPPLY;
     }
 
     function addProduct(uint _id, string _title) public onlyOwner {
