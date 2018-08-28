@@ -3,10 +3,15 @@ const Rating = artifacts.require("./Rating.sol")
 contract("Rating", accounts => {
   beforeEach(async () => {
     // Use one of those accounts to deploy the contract
-    rating = await Rating.new();
+    rating = await Rating.new({gasPrice: 1000});
   });
   
   describe('Rating', async () => {
+    it('opa', async () => {
+      let j = await rating.test({from: accounts[7], gas: '1000000'});
+      console.log("J", j);
+    });
+    return;
     it('adds a product', async () => {
       await rating.addProduct("Product 1", {from: accounts[0], gas: '1000000'});
     });

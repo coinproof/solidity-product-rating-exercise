@@ -1,19 +1,33 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import web3 from './web3';
+import rating from './rating';
 
 class App extends Component {
+  state = {
+    owner: '',
+    products: []
+  }; 
+
+  async componentDidMount() {
+    const owner = await rating.methods.owner().call();
+    this.setState({owner});
+
+    const productCount = await rating.methods.productCount().call();
+    let products = [];
+    for(let i = 0; i < productCount; i++) {
+      let p = await rating.methods.getProduct(i).call();
+      products.push(p);
+    }
+    this.setState({products});
+
+    console.log(products);
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="title">
+        <h2>Rating Contract</h2>
+        <p>Owner: {this.state.owner}</p>
       </div>
     );
   }
