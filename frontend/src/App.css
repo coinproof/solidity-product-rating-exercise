@@ -1,3 +1,12 @@
 div {
   margin: 5px;
 }
+
+.title {
+  display: inline-flex;
+}
+
+.title * {
+  margin: auto;
+  padding-left: 5px;
+}
