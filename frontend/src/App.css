@@ -10,3 +10,20 @@ div {
   margin: auto;
   padding-left: 5px;
 }
+
+.product-info {
+  padding-left: 5px;
+}
+
+.bt-review {
+  float: right;
+}
+
+.list-group {
+  width: 50%;
+}
+
+.pagination * {
+  margin: 5px;
+  font-size: 0.7em;
+}

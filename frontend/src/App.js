@@ -7,8 +7,10 @@ class App extends Component {
   state = {
     owner: '',
     products: [],
+    productCount: 0,
     pageSize: 5,
     currPage: 0,
+    lastPage: false,
     newProductName: '',
     accounts: '',
     status: ''
@@ -24,14 +26,17 @@ class App extends Component {
   async getPage(page) {
     if(page < 0) return;
 
-    const productCount = await rating.methods.productCount().call();
+    this.setState({lastPage: false});
+    this.setState({productCount: await rating.methods.productCount().call()});
     const skip = page * this.state.pageSize;
     let limit = skip + this.state.pageSize;
 
-    if(skip > productCount)
+    if(skip > this.state.productCount)
       return;
-    if(limit > productCount)
-      limit = productCount;
+    if(limit > this.state.productCount){
+      limit = this.state.productCount;
+      this.setState({lastPage: true});
+    }
 
     let products = [];
     this.setState({products});
@@ -60,9 +65,12 @@ class App extends Component {
     let productId = event.target.value;
     let productRating = window.prompt("Choose a rating between 0 and 5:");
 
+    if(!productRating) return;
+
     if(!isNaN(productRating) && Number.isInteger(+productRating) && productRating >= 0 && productRating <= 5) {
       this.setState({status: 'Adding review...'});
-      await rating.methods.addReview(productId, productRating).send({from: this.state.accounts[0]});
+      let x = await rating.methods.addReview(productId, productRating).send({from: this.state.accounts[0]});
+      console.log("oq voltou", x);
       this.setState({status: 'Review added!'});
     } else
       this.setState({status: 'Invalid rating!'});
@@ -71,9 +79,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <div className="title">
-          <h2>Rating Contract - </h2>
-          <p className="owner">Owner: {this.state.owner}</p>
+        <div className="jumbotron">
+          <h2>Rating Contract</h2>      
+          <p>The owner of this contract is: {this.state.owner}</p>
         </div>
         {this.state.owner === this.state.accounts[0] ?
           <form onSubmit={this.addProduct}>
@@ -84,20 +92,22 @@ class App extends Component {
           </form> : null
           }
         <p><b>Products:</b></p>
-        <ul>
+        <ul className="list-group">
           {this.state.products.length ? null : <li>Loading...</li>}
           {this.state.products.map(p => 
-            <li key={p.id}>
+            <li className="list-group-item" key={p.id}>
               {p.hasReviewed ? null : 
-                <button value={p.id} onClick={this.addReview}>Review this product</button>
+                <button type="button" className="bt-review btn btn-primary" value={p.id} onClick={this.addReview}>Review this product</button>
               }
-              {(p.avgRating/10).toFixed(1)} - {p.title}
+              <p className="product-info">{(p.avgRating/10).toFixed(1)} - {p.title}</p>
             </li>
           )}
         </ul>
-        <button onClick={event => this.getPage(this.state.currPage - 1)}>&lt;</button>
-        <button onClick={event => this.getPage(this.state.currPage + 1)}>&gt;</button>
-        <br/>Page: {this.state.currPage+1}
+        <div className="pagination">
+          <button type="button" className="btn btn-secondary" disabled={this.state.currPage === 0} onClick={event => this.getPage(this.state.currPage - 1)}>&lt;</button>
+          Page: {this.state.currPage+1}
+          <button type="button" className="btn btn-secondary" disabled={this.state.lastPage} onClick={event => this.getPage(this.state.currPage + 1)}>&gt;</button>
+        </div>
         <h3>{this.state.status}</h3>
       </div>
     );
