@@ -27,3 +27,11 @@ div {
   margin: 5px;
   font-size: 0.7em;
 }
+
+.input-group {
+  width: 35% !important;
+}
+
+form button {
+  margin-left: 10px;
+}
