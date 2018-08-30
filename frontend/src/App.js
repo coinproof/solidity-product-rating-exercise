@@ -7,6 +7,8 @@ class App extends Component {
   state = {
     owner: '',
     products: [],
+    pageSize: 5,
+    currPage: 0,
     newProductName: '',
     accounts: '',
     status: ''
@@ -16,13 +18,30 @@ class App extends Component {
     this.setState({accounts: await web3.eth.getAccounts()});
     this.setState({owner: await rating.methods.owner().call()});
 
+    this.getPage(0);
+  }
+
+  async getPage(page) {
+    if(page < 0) return;
+
     const productCount = await rating.methods.productCount().call();
+    const skip = page * this.state.pageSize;
+    let limit = skip + this.state.pageSize;
+
+    if(skip > productCount)
+      return;
+    if(limit > productCount)
+      limit = productCount;
+
     let products = [];
-    for(let i = 0; i < productCount; i++) {
+    this.setState({products});
+    for(let i = skip; i < limit; i++) {
       let p = await rating.methods.getProduct(i).call({from: this.state.accounts[0]});
       products.push(p);
     }
     this.setState({products});
+
+    this.setState({currPage: page});
 
     console.log('products', this.state.products);
   }
@@ -76,6 +95,9 @@ class App extends Component {
             </li>
           )}
         </ul>
+        <button onClick={event => this.getPage(this.state.currPage - 1)}>&lt;</button>
+        <button onClick={event => this.getPage(this.state.currPage + 1)}>&gt;</button>
+        <br/>Page: {this.state.currPage+1}
         <h3>{this.state.status}</h3>
       </div>
     );
