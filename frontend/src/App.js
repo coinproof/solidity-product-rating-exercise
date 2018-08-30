@@ -92,11 +92,9 @@ class App extends Component {
         </div>
         {this.state.owner === this.state.accounts[0] ?
           <form onSubmit={this.addProduct}>
-
-
             <div class="input-group input-group-sm mb-3">
               <input placeholder="Type product name..." value={this.state.newProductName} onChange={event => {this.setState({newProductName: event.target.value})}} type="text" class="form-control" aria-describedby="inputGroup-sizing-sm"/>
-              <button type="button" className="btn btn-primary">Add new product</button>
+              <button className="btn btn-primary">Add new product</button>
             </div>
           </form> : null
           }
