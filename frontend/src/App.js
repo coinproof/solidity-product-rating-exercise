@@ -84,12 +84,10 @@ class App extends Component {
           <p>The owner of this contract is: {this.state.owner}</p>
         </div>
         {this.state.owner === this.state.accounts[0] ?
-          <form onSubmit={this.addProduct}>
-
-
-            <div class="input-group input-group-sm mb-3">
-              <input placeholder="Type product name..." value={this.state.newProductName} onChange={event => {this.setState({newProductName: event.target.value})}} type="text" class="form-control" aria-describedby="inputGroup-sizing-sm"/>
-              <button type="button" className="btn btn-primary">Add new product</button>
+          <form>
+            <div className="input-group input-group-sm mb-3">
+              <input placeholder="Type product name..." value={this.state.newProductName} onChange={event => {this.setState({newProductName: event.target.value})}} type="text" className="form-control" aria-describedby="inputGroup-sizing-sm"/>
+              <button onClick={this.addProduct} type="button" className="btn btn-primary">Add new product</button>
             </div>
           </form> : null
           }
@@ -98,8 +96,11 @@ class App extends Component {
           {this.state.products.length ? null : <li>Loading...</li>}
           {this.state.products.map(p => 
             <li className="list-group-item" key={p.id}>
+              <span className="glyphicon glyphicon-star" aria-hidden="true"></span>
               <button disabled={p.hasReviewed} type="button" className="bt-review btn btn-info" value={p.id} onClick={this.addReview}>Review this product</button>
-              <p className="product-info">{(p.avgRating/10).toFixed(1)} - {p.title}</p>
+              <p className="product-info">
+                {(p.avgRating/10).toFixed(1)} - {p.title}
+              </p>
             </li>
           )}
         </ul>
