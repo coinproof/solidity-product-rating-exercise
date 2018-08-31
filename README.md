@@ -3,6 +3,10 @@
 #### Restrictions:
   - Only the owner can add products
   - A user can only rate a product once
+  
+#### Preview
+
+[Click here to preview](https://rawgit.com/alexandretok/solidity-product-rating-exercise/build/frontend/build/index.html)
 
 #### Getting started
 
