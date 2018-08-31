@@ -18,6 +18,16 @@ contract Rating is Ownable, StandardToken {
         mapping(address => bool) hasReviewed;
     }
 
+    event ProductAdded(
+        uint id,
+        string title
+    );
+
+    event ProductReviewed(
+        uint id,
+        uint avgRating
+    );
+
     mapping(uint => Product) products;
     uint public productCount = 0;
 
@@ -39,6 +49,7 @@ contract Rating is Ownable, StandardToken {
 
         products[productCount] = product;
         productCount++;
+        emit ProductAdded(product.id, product.title);
     }
         
     function addReview(uint _productId, uint8 _rating) public {
@@ -51,6 +62,8 @@ contract Rating is Ownable, StandardToken {
         product.sumRating += _rating * 10;
         product.hasReviewed[msg.sender] = true;
         product.reviewsCount++;
+
+        emit ProductReviewed(product.id, product.sumRating / product.reviewsCount);
     }
     
     function getProduct(uint productId) public view returns (uint id, string title, uint avgRating, bool hasReviewed) {
