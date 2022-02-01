@@ -1,83 +1,71 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.11;
 
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "./Ownable.sol";
 
-contract Rating is Ownable, StandardToken {
-    // ERC20 properties
-    string public name = "ReviewToken";
-    string public symbol = "RVW";
-    uint8 public decimals = 2;
-    uint public INITIAL_SUPPLY = 1000000;
+contract BBTRating is Ownable {
     
-    struct Product {
+    struct Profile {
         uint id;
-        string title;
+        string name;
         uint reviewsCount;
         uint sumRating;
         mapping(address => bool) hasReviewed;
     }
 
-    event ProductAdded(
+    event ProfileAdded(
         uint id,
-        string title
+        string name
     );
 
-    event ProductReviewed(
+    event ProfileReviewed(
         uint id,
         uint avgRating
     );
 
-    mapping(uint => Product) products;
-    uint public productCount = 0;
+    uint numProfiles;
+    mapping(uint => Profile) profiles;
+    uint public profileCount = 0;
 
-    constructor() public {
-        owner = msg.sender;
-        totalSupply_ = INITIAL_SUPPLY;
-        balances[msg.sender] = INITIAL_SUPPLY;
-    }
+    function addProfile(string memory _name) public onlyOwner {
+        require(keccak256(bytes(_name)) != keccak256(""), "The name property is required.");
 
-    function addProduct(string _title) public onlyOwner {
-        require(keccak256(bytes(_title)) != keccak256(""), "The title property is required.");
+        Profile storage p = profiles[numProfiles++];
+        
+            p.id = profileCount;
+            p.name = _name;
+            p.reviewsCount = 0;
+            p.sumRating = 0;
 
-        Product memory product = Product({
-            id: productCount,
-            title: _title,
-            reviewsCount: 0,
-            sumRating: 0
-        });
-
-        products[productCount] = product;
-        productCount++;
-        emit ProductAdded(product.id, product.title);
+            profileCount++;
     }
         
-    function addReview(uint _productId, uint8 _rating) public {
-        Product storage product = products[_productId];
+    function addReview(uint _profileId, uint8 _rating) public {
+        Profile storage profile = profiles[_profileId];
 
-        require(keccak256(bytes(product.title)) != keccak256(""), "Product not found.");
+        require(keccak256(bytes(profile.name)) != keccak256(""), "Profile not found.");
         require(_rating >= 0 && _rating <= 5, "Rating is out of range.");
-        require(!product.hasReviewed[msg.sender], "This address already reviewed this product.");
+        require(!profile.hasReviewed[msg.sender], "This address already reviewed this profile.");
 
-        product.sumRating += _rating * 10;
-        product.hasReviewed[msg.sender] = true;
-        product.reviewsCount++;
+        profile.sumRating += _rating * 10;
+        profile.hasReviewed[msg.sender] = true;
+        profile.reviewsCount++;
 
-        emit ProductReviewed(product.id, product.sumRating / product.reviewsCount);
+        emit ProfileReviewed(profile.id, profile.sumRating / profile.reviewsCount);
     }
     
-    function getProduct(uint productId) public view returns (uint id, string title, uint avgRating, bool hasReviewed) {
-        Product storage product = products[productId];
+    function getProfile(uint profileId) public view returns (uint id, string memory name, uint avgRating, bool hasReviewed) {
+        Profile storage profile = profiles[profileId];
         uint _avgRating = 0;
 
-        if(product.reviewsCount > 0)
-            _avgRating = product.sumRating / product.reviewsCount;
+        if(profile.reviewsCount > 0)
+            _avgRating = profile.sumRating / profile.reviewsCount;
         
         return (
-            product.id,
-            product.title,
+            profile.id,
+            profile.name,
             _avgRating,
-            product.hasReviewed[msg.sender]
+            profile.hasReviewed[msg.sender]
         );
     }
 }
