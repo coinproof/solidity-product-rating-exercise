@@ -54,7 +54,7 @@ contract BBTRating is Ownable {
         emit ProfileReviewed(profile.id, profile.sumRating / profile.reviewsCount);
     }
     
-    function getProfile(uint profileId) public view returns (uint id, string memory name, uint avgRating, bool hasReviewed) {
+    function getProfile(uint profileId) public view returns (uint id, string memory name, uint avgRating, uint reviewsCount) {
         Profile storage profile = profiles[profileId];
         uint _avgRating = 0;
 
@@ -65,7 +65,7 @@ contract BBTRating is Ownable {
             profile.id,
             profile.name,
             _avgRating,
-            profile.hasReviewed[msg.sender]
+            profile.reviewsCount
         );
     }
 }
